@@ -10,7 +10,7 @@ except ImportError:
     # Reimport pandas
     import pandas as pd
 
-#Check if pandas is installed
+#Check if openpyxl is installed
 try:
     import openpyxl
 except ImportError:
