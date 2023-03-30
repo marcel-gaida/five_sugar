@@ -28,6 +28,12 @@ except ImportError:
     subprocess.run(["pip", "install", "plotly"])
     import plotly.graph_objs as go
 
+try:
+    import scipy
+except ImportError:
+    subprocess.run(["pip", "install", "scipy"])
+    import scipy
+
 from plotly.offline import iplot, plot
 
 url = input("Enter the URL: ")
@@ -93,22 +99,6 @@ for node in graph.nodes():
     node_y.append(y)
     node_text.append('<a href="' + node + '" target="_blank">' + node + '</a>')
     node_color.append('blue' if graph.nodes[node]['is_original_domain'] else 'red')
-
-#node_x = []
-#node_y = []
-#node_text = []
-#for node in graph.nodes():
- #   x, y = pos[node]
-  #  node_x.append(x)
-   # node_y.append(y)
-    #node_text.append(node)
-
-#node_color = []
-#for node, data in graph.nodes(data=True):
- #   if data['is_original_domain']:
-  #      node_color.append('blue')
-   # else:
-    #    node_color.append('red')
 
 node_trace = go.Scatter(
     x=node_x,
