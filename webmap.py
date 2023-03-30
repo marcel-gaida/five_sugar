@@ -34,7 +34,8 @@ except ImportError:
     subprocess.run(["pip", "install", "scipy"])
     import scipy
 
-from plotly.offline import iplot, plot
+import plotly.offline as pyo
+
 
 url = input("Enter the URL: ")
 headers = {
@@ -128,9 +129,9 @@ fig = go.Figure(data=[edge_trace, node_trace],
                     xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
                     yaxis=dict(showgrid=False, zeroline=False, showticklabels=False))
                 )
-iplot(fig)
+pyo.plot(fig)
 
 
 # Save the Plotly figure as an HTML file
-plot(fig, filename='graph.html')
+pyo.plot(fig, filename='graph.html')
 
