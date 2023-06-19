@@ -25,7 +25,7 @@ Contributions, issues, and feature requests are welcome!<br />Feel free to check
 ## Show your support
 
 Give a ⭐️ if this project helped you!
-[Buy me a coffee!](https://www.buymeacoffee.com/gaidamarcel)
+You can also [buy me a coffee!](https://www.buymeacoffee.com/gaidamarcel)
 
 
 
