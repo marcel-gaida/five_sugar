@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wayback Link-Checker</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <header class="header">
+      <img src="icon48.png" alt="Wayback" class="header-icon" />
+      <div class="header-text">
+        <h1>Wayback Machine</h1>
+        <p class="subtitle">Link-Checker</p>
+      </div>
+    </header>
+
+    <!-- Status card -->
+    <section id="status-card" class="card status-card loading">
+      <div class="spinner" id="spinner"></div>
+      <div class="status-content" id="status-content" style="display: none;">
+        <div class="status-indicator" id="status-indicator"></div>
+        <div class="status-details">
+          <p class="status-label" id="status-label">Checking…</p>
+          <p class="status-meta" id="status-meta"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Current URL (truncated) -->
+    <section class="card url-card">
+      <span class="url-label">Current page</span>
+      <span class="url-value" id="current-url" title="">—</span>
+    </section>
+
+    <!-- Snapshot info -->
+    <section class="card snapshot-card" id="snapshot-card" style="display: none;">
+      <div class="snapshot-row">
+        <span class="snapshot-key">Latest capture</span>
+        <span class="snapshot-val" id="snapshot-date">—</span>
+      </div>
+      <div class="snapshot-row">
+        <span class="snapshot-key">Total snapshots</span>
+        <span class="snapshot-val" id="snapshot-count">—</span>
+      </div>
+    </section>
+
+    <!-- Recent snapshots timeline -->
+    <section class="card timeline-card" id="timeline-card" style="display: none;">
+      <div class="timeline-header">
+        <span class="timeline-title">Recent Cached Versions</span>
+        <span class="timeline-badge" id="timeline-badge"></span>
+      </div>
+      <div class="timeline-list" id="timeline-list">
+        <div class="timeline-loading">
+          <div class="spinner spinner-sm"></div>
+          <span>Loading snapshots…</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Action buttons -->
+    <section class="actions">
+      <button id="btn-view" class="btn btn-primary" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        View Latest Snapshot
+      </button>
+      <button id="btn-timeline" class="btn btn-secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+        Browse Full Timeline
+      </button>
+      <div class="save-group">
+        <label class="save-option" for="chk-images">
+          <input type="checkbox" id="chk-images" checked />
+          <span class="checkmark"></span>
+          <span class="save-option-label">Include images</span>
+        </label>
+        <button id="btn-save-offline" class="btn btn-accent">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Save Page Offline
+        </button>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <a href="https://bmc.link/gaidamarcel" id="support-link" target="_blank" rel="noopener">
+        ☕ Support the developer
+      </a>
+      <span class="version">v2.0</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
