@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Company Rating Lookup Settings</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-area">
+        <span class="logo-icon">★</span>
+        <h1>Rating Lookup</h1>
+      </div>
+      <p class="subtitle">Glassdoor + Google Maps integrations</p>
+    </header>
+
+    <main>
+      <div class="card">
+        <h2>Configuration</h2>
+        
+        <!-- Google Places API key input -->
+        <div class="input-group">
+          <label for="googleApiKey">Google Places API Key <span class="optional-badge">Optional</span></label>
+          <div class="input-wrapper">
+            <input type="password" id="googleApiKey" placeholder="AIzaSy..." autocomplete="off">
+            <button type="button" id="toggleKeyVisibility" class="btn-icon" title="Toggle Visibility">👁️</button>
+          </div>
+          <span class="input-help">Optional &mdash; speeds up Google Maps lookup. Leave empty to use browser-based scraping.</span>
+        </div>
+
+        <button id="saveBtn" class="btn-primary">Save Settings</button>
+        <div id="statusMessage" class="status-msg"></div>
+      </div>
+
+      <div class="card usage-tips">
+        <h3>How to use:</h3>
+        <ol>
+          <li>Highlight any company name on LinkedIn, Indeed, etc.</li>
+          <li>Right-click the selection to open the context menu.</li>
+          <li>Click <strong>"Look up company ratings"</strong>.</li>
+          <li>View Glassdoor and Google Maps ratings in the floating popup.</li>
+        </ol>
+      </div>
+    </main>
+
+<div class="crl-support-footer">
+  <a href="https://buymeacoffee.com/gaidamarcel" target="_blank" rel="noopener noreferrer" class="crl-support-link">
+    ☕ Support the developer
+  </a>
+</div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
