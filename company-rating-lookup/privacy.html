@@ -7,74 +7,117 @@
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      line-height: 1.6;
+      line-height: 1.7;
       color: #334155;
-      max-width: 700px;
-      margin: 60px auto;
-      padding: 0 24px;
+      max-width: 680px;
+      margin: 64px auto;
+      padding: 0 28px;
       background-color: #f8fafc;
     }
     h1 {
       color: #0f172a;
-      font-size: 2.2rem;
+      font-size: 2rem;
       font-weight: 800;
-      margin-bottom: 24px;
-      border-bottom: 2px solid #e2e8f0;
-      padding-bottom: 12px;
+      margin-bottom: 6px;
+      letter-spacing: -0.02em;
+    }
+    .effective-date {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      margin-bottom: 28px;
+      display: block;
+    }
+    .intro {
+      font-size: 1rem;
+      color: #475569;
+      border-left: 3px solid #6366f1;
+      padding-left: 14px;
+      margin-bottom: 36px;
     }
     h2 {
       color: #1e293b;
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-top: 32px;
-      margin-bottom: 16px;
-    }
-    p, li {
       font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-top: 36px;
+      margin-bottom: 10px;
+      color: #6366f1;
+    }
+    p {
+      font-size: 0.95rem;
       color: #475569;
-    }
-    ul {
-      padding-left: 20px;
-    }
-    li {
       margin-bottom: 12px;
     }
-    .footer {
-      margin-top: 60px;
+    ul {
+      padding-left: 18px;
+      margin: 10px 0 0 0;
+    }
+    li {
+      font-size: 0.95rem;
+      color: #475569;
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+    code {
+      background: #e2e8f0;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: #334155;
+    }
+    .divider {
+      border: none;
       border-top: 1px solid #e2e8f0;
+      margin: 40px 0 0 0;
+    }
+    .footer {
       padding-top: 20px;
-      font-size: 0.85rem;
+      font-size: 0.78rem;
       color: #94a3b8;
       text-align: center;
     }
   </style>
 </head>
 <body>
+
   <h1>Privacy Policy</h1>
-  <p><strong>Effective Date: May 23, 2026</strong></p>
-  <p>Your privacy is of paramount importance to us. This Privacy Policy details the data collection, storage, and processing practices of the <strong>Company Rating Lookup</strong> Google Chrome extension.</p>
+  <span class="effective-date">Effective Date: May 23, 2026</span>
 
-  <h2>1. No Personal Data Collection</h2>
-  <p>This extension does not collect, harvest, store, or transmit any personal data, user credentials, browsing habits, or telemetry to external servers. It is built as a fully secure, self-contained client-side tool.</p>
-
-  <h2>2. Local Storage of API Keys</h2>
-  <p>If you choose to input a Google Places API key to speed up Google Maps lookups, this key is saved securely inside your browser's local sandbox using <code>chrome.storage.local</code>. This key is never shared, sent, or uploaded to any third party other than direct Places API calls to Google's official endpoints.</p>
-
-  <h2>3. Background Scraping Data Boundaries</h2>
-  <p>When you trigger a company lookup, the extension opens temporary background browser tabs to load public ratings pages on Glassdoor and Google Search.
-  <ul>
-    <li>These tabs load using your existing browser session and cookies to guarantee access.</li>
-    <li>We do not collect, log, or store any information from these pages other than extracting the business rating value and review count.</li>
-    <li>No data is transmitted beyond rendering the interactive glassmorphic ratings card on your active screen tab.</li>
-    <li>The scraping tabs are fully destroyed and closed automatically within 3 seconds of completing the lookup.</li>
-  </ul>
+  <p class="intro">
+    Company Rating Lookup is a self-contained browser tool. It runs entirely on your device and has no backend, no accounts, and no external data pipeline.
   </p>
 
-  <h2>4. No Tracking, Cookies, or Analytics</h2>
-  <p>The Company Rating Lookup extension does not use tracking cookies, analytics scripts, tracking pixels, or third-party advertisements of any kind. Your lookups remain private to you.</p>
+  <h2>1. No Data Collection</h2>
+  <p>
+    This extension collects no personal data, browsing history, or usage telemetry. Nothing about you or your activity is recorded or transmitted to any external server.
+  </p>
 
+  <h2>2. API Key Storage</h2>
+  <p>
+    If you enter a Google Places API key, it is stored locally in your browser using <code>chrome.storage.local</code> — sandboxed to this extension only. It is used exclusively for direct calls to Google's official Places API endpoints and is never shared with any third party.
+  </p>
+
+  <h2>3. Background Tab Scraping</h2>
+  <p>
+    Triggering a company lookup opens temporary background tabs to retrieve public ratings from Glassdoor and Google Search. These tabs:
+  </p>
+  <ul>
+    <li>Load using your existing browser session to ensure page access.</li>
+    <li>Extract only the business rating value and review count — nothing else from the page is read or retained.</li>
+    <li>Are automatically closed within seconds of the lookup completing.</li>
+    <li>Transmit no data outside your browser — results are rendered locally in the ratings card.</li>
+  </ul>
+
+  <h2>4. No Tracking or Analytics</h2>
+  <p>
+    The extension contains no analytics scripts, tracking pixels, cookies, or advertisements. All lookups remain entirely private to your device.
+  </p>
+
+  <hr class="divider">
   <div class="footer">
-    <p>Company Rating Lookup &middot; Chrome Extension &middot; Open Source &middot; 2026</p>
+    <p>Company Rating Lookup &middot; Chrome Extension &middot; 2026</p>
   </div>
+
 </body>
 </html>
