@@ -82,7 +82,7 @@ If Digitine saved you time, consider buying me a coffee!
 
 This project is licensed under the MIT License. Please refer to the [LICENSE](LICENSE) file in the repository root for the full text. 
 
-Copyright (c) 2026 [Your Name]
+Copyright (c) 2026 Marcel Gaida
 
 ---
 
