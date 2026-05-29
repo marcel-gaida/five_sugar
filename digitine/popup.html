@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digitine | Instagram Account Blocker</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  
+  <header>
+    <div class="logo-container">
+      <div class="logo-icon">D</div>
+      <div class="logo-text">DIGITINE</div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <button id="btnExpand" class="btn-text" style="color: var(--text-secondary); padding: 4px;" aria-label="Open in Tab">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></svg>
+      </button>
+      <span class="version">v1.2</span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Config Panel -->
+    <section class="panel" id="configPanel">
+      <h2 class="panel-title">
+        <span>Target Profiles</span>
+        <span id="queueCount" style="text-transform: none;">0 loaded</span>
+      </h2>
+      <textarea id="urlList" placeholder="Paste Instagram profile URLs or usernames here&#10;e.g.&#10;https://www.instagram.com/bad_actor/&#10;spammer_account" spellcheck="false"></textarea>
+      
+      <div class="config-row">
+        <span>Operation Mode:</span>
+        <div class="mode-selector">
+          <button class="mode-btn active" id="modeBlock" data-mode="block">Block</button>
+          <button class="mode-btn" id="modeUnblock" data-mode="unblock">Unblock</button>
+        </div>
+      </div>
+      
+      <div class="config-row">
+        <span>Safety delay between steps:</span>
+        <div class="delay-selector">
+          <input type="number" id="stepDelay" class="delay-input" value="3" min="1" max="15">
+          <span>sec</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Status Panel -->
+    <section class="panel" id="statusPanel">
+      <h2 class="panel-title">Automation Progress</h2>
+      <div class="status-box">
+        <div class="progress-header">
+          <span id="progressPercent">0%</span>
+          <span id="progressFraction">0 / 0</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <div class="status-stats">
+          <div class="stat-card success">
+            <div class="stat-value" id="statBlocked">0</div>
+            <div class="stat-label">Blocked</div>
+          </div>
+          <div class="stat-card active">
+            <div class="stat-value" id="statRemaining">0</div>
+            <div class="stat-label">Remaining</div>
+          </div>
+        </div>
+
+        <div class="current-target">
+          <span>Active Target:</span>
+          <span id="activeTarget">None</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Console Panel -->
+    <section class="panel">
+      <h2 class="panel-title">
+        <span>System Activity Log</span>
+        <button id="btnDownloadLog" class="btn-text" aria-label="Download Logs">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 2px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          Download
+        </button>
+      </h2>
+      <div class="log-console" id="logConsole">
+        <div class="log-entry info">System ready. Enter target profiles above.</div>
+      </div>
+    </section>
+
+    <!-- Action Buttons -->
+    <div class="controls-grid">
+      <button class="btn btn-primary" id="btnStart" aria-label="Start Auto Blocking">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        Start Blocking
+      </button>
+      <button class="btn btn-outline" id="btnPause" disabled aria-label="Pause Auto Blocking">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        Pause
+      </button>
+    </div>
+    
+    <button class="btn btn-danger-outline" id="btnStop" disabled style="width: 100%;" aria-label="Stop and Reset Queue">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/></svg>
+      Stop & Reset Queue
+    </button>
+    
+    <button id="btn-reset-tool" class="btn-reset-tool" disabled style="width: 100%; margin-top: 10px;">
+      ↺ Reset Tool
+    </button>
+    
+    <footer class="support-footer">
+      <a href="https://buymeacoffee.com/gaidamarcel" target="_blank" rel="noopener noreferrer">
+        ☕ Support the developer
+      </a>
+    </footer>
+  </main>
+
+  <footer class="footer-actions">
+    <div class="status-indicator ready" id="statusIndicator">
+      <div class="status-dot"></div>
+      <span id="statusText">Ready</span>
+    </div>
+    <span id="statusSubtext">Chrome Auto-Driver</span>
+  </footer>
+
+  <script src="popup.js"></script>
+</body>
+</html>

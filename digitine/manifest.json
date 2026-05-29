@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "Digitine",
+  "version": "1.0.0",
+  "description": "Automated Instagram bulk-blocker with glassmorphism dashboard.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting",
+    "alarms"
+  ],
+  "host_permissions": [
+    "https://www.instagram.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/16.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
+  }
+}
