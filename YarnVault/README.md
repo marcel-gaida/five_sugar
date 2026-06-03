@@ -14,7 +14,7 @@ A local crochet pattern organizer with a warm, cozy interface. Built entirely wi
 
 ### Step 1: Prepare the Files
 1. Download this entire `YarnVault` folder.
-2. The extension uses PDF.js. Ensure `pdf.min.js` and `pdf.worker.min.js` are in the root directory alongside `manifest.json`. (They should already be downloaded, but if not, you can grab them from the cdnjs links in the implementation plan).
+2. The extension uses PDF.js. Ensure `pdf.min.js` and `pdf.worker.min.js` are in the root directory alongside `manifest.json`. 
 
 ### Step 2: Load into Chrome
 1. Open Google Chrome.
