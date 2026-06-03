@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yarn Vault</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- APP SHELL — always visible once folder is selected -->
+  <div id="app-shell" class="hidden">
+
+    <!-- ===== HEADER ===== -->
+    <header id="app-header">
+      <div class="header-logo">
+        <!-- SVG yarn ball logo here -->
+        <span class="logo-text">Yarn Vault</span>
+      </div>
+      <div class="header-search">
+        <input type="text" id="search-input" placeholder="Search patterns, tags..." autocomplete="off">
+        <button id="btn-clear-search" class="hidden">✕</button>
+      </div>
+      <div class="header-actions">
+        <div class="view-toggles" id="view-mode-toggles">
+          <button id="btn-view-grid" class="btn-icon active" title="Grid View">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          </button>
+          <button id="btn-view-list" class="btn-icon" title="List View">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+          </button>
+        </div>
+        <div class="header-divider"></div>
+        <button id="theme-toggle" class="btn-icon" aria-label="Toggle theme" title="Toggle Dark/Light Mode">
+          <svg class="icon-moon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          <svg class="icon-sun hidden" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        </button>
+        <button id="settings-toggle" class="btn-icon" aria-label="Settings" title="Settings">⚙</button>
+      </div>
+    </header>
+
+    <!-- FILTER BAR -->
+    <div id="filter-bar">
+      <span id="search-count" class="hidden"></span>
+      <select id="filter-type">
+        <option value="all">All Types</option>
+        <option value="pdf">PDF</option>
+        <option value="image">Images</option>
+      </select>
+      <select id="filter-rating">
+        <option value="0">Any Rating</option>
+        <option value="4">4+ Stars</option>
+        <option value="5">5 Stars</option>
+        <option value="3">3+ Stars</option>
+      </select>
+      <select id="sort-by">
+        <option value="name-asc">Name (A → Z)</option>
+        <option value="name-desc">Name (Z → A)</option>
+        <option value="rating-desc">Rating (High → Low)</option>
+        <option value="rating-asc">Rating (Low → High)</option>
+      </select>
+      <div class="slider-group" id="size-slider-group">
+        <span>🔍</span>
+        <input type="range" id="card-size-slider" min="100" max="400" value="160" step="10" title="Adjust Card Size">
+      </div>
+      <div></div>
+      <button id="btn-change-folder" class="btn btn-ghost">📁 Change Folder</button>
+    </div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div id="main-content">
+
+      <!-- ===== SIDEBAR ===== -->
+      <aside id="sidebar">
+        <div id="sidebar-tabs">
+          <button id="tab-folders" class="tab-btn active">Folders</button>
+          <button id="tab-bookmarks" class="tab-btn">Bookmarks</button>
+        </div>
+        <div id="panel-folders">
+          <div id="folder-tree"></div>
+        </div>
+        <div id="panel-bookmarks" class="hidden">
+          <div id="sidebar-bookmarks-list"></div>
+        </div>
+        
+        <!-- Support Link -->
+        <div class="sidebar-support-link">
+          <a href="https://buymeacoffee.com/gaidamarcel" target="_blank" rel="noopener noreferrer">
+            ☕ Support your developer
+          </a>
+        </div>
+      </aside>
+
+      <!-- RIGHT: BREADCRUMBS + GRID -->
+      <div id="content-area">
+        <nav id="breadcrumbs"></nav>
+
+        <!-- INDEXING PROMPT — shown inline ABOVE the grid, not instead of it -->
+        <div id="indexing-prompt" class="hidden">
+          <div class="prompt-box">
+            <p><strong>Welcome to Yarn Vault!</strong></p>
+            <p id="prompt-file-count"></p>
+            <p>Would you like to generate thumbnail previews?<br>
+               This takes a few minutes but makes browsing much more visual. You can stop at any time.</p>
+            <div class="prompt-actions">
+              <button id="btn-prompt-yes" class="btn btn-primary">Yes, generate previews</button>
+              <button id="btn-prompt-no" class="btn btn-ghost">Skip for now</button>
+            </div>
+            <p class="prompt-note">You can always start this later from Settings.</p>
+          </div>
+        </div>
+
+        <!-- INDEXING PROGRESS BANNER -->
+        <div id="indexing-banner" class="hidden">
+          <span id="indexing-banner-text">Indexing thumbnails...</span>
+          <div id="indexing-progress-bar"><div id="indexing-progress-fill"></div></div>
+          <button id="btn-indexing-stop">Pause</button>
+          <button id="btn-indexing-resume" class="hidden">Resume</button>
+          <button id="btn-indexing-dismiss" class="hidden">Dismiss</button>
+        </div>
+
+        <!-- FILE GRID -->
+        <div id="grid-container"></div>
+
+        <!-- EMPTY STATES -->
+        <div id="empty-folder-view" class="view-state hidden">
+          <div class="empty-icon">🧶</div>
+          <h3>This folder is empty</h3>
+          <p>No patterns here yet.</p>
+        </div>
+        <div id="no-results-view" class="view-state hidden">
+          <div class="empty-icon">🔍</div>
+          <h3>No patterns match your search</h3>
+          <p>Try adjusting your filters or search terms.</p>
+        </div>
+
+      </div><!-- /content-area -->
+    </div><!-- /main-content -->
+
+  </div><!-- /app-shell -->
+
+  <!-- WELCOME VIEW — shown before folder is selected -->
+  <div id="welcome-view" class="full-view">
+    <div class="welcome-content">
+      <!-- SVG yarn ball illustration -->
+      <h1>Welcome to Yarn Vault</h1>
+      <p>Organize your crochet patterns in one cozy place.</p>
+      <div id="reconnect-container" class="hidden">
+        <p>Reconnect to: <strong id="prev-folder-name"></strong></p>
+        <button id="btn-reconnect-folder" class="btn btn-primary">Reconnect Folder</button>
+        <p>or</p>
+      </div>
+      <button id="btn-select-folder" class="btn btn-primary">Select Your Pattern Folder</button>
+    </div>
+  </div>
+
+  <!-- OVERLAYS -->
+  <div id="panel-overlay" class="hidden"></div>
+
+  <!-- VIEWER PANEL (slides in from right) -->
+  <div id="viewer-panel">
+    <div id="viewer-header">
+      <div id="viewer-title"></div>
+      <div id="viewer-rating"></div>
+      <button id="btn-close-viewer">✕</button>
+    </div>
+    <div id="viewer-tags-area">
+      <div id="viewer-tags-container"></div>
+      <div class="viewer-tag-input-wrapper">
+        <input type="text" id="viewer-tag-input" placeholder="Add tag...">
+        <div id="tag-autocomplete-dropdown" class="hidden"></div>
+      </div>
+    </div>
+    <div id="pdf-controls" class="hidden">
+      <button id="btn-prev-page">◀</button>
+      <input type="number" id="page-num-input" min="1" value="1">
+      <span>/ <span id="page-count">1</span></span>
+      <button id="btn-next-page">▶</button>
+    </div>
+    <div id="image-controls" class="hidden">
+      <button id="btn-zoom-out">−</button>
+      <button id="btn-zoom-reset">100%</button>
+      <button id="btn-zoom-in">+</button>
+    </div>
+    <div id="viewer-canvas-container">
+      <canvas id="pdf-canvas" class="hidden"></canvas>
+      <img id="image-view" class="hidden" alt="Pattern preview">
+    </div>
+    <div id="bookmarks-section">
+      <button id="btn-add-bookmark" class="btn btn-secondary">+ Add Bookmark</button>
+      <div id="add-bookmark-form" class="hidden">
+        <input type="text" id="bookmark-label-input" placeholder="e.g. Left off at Row 12">
+        <button id="btn-save-bookmark" class="btn btn-primary">Save</button>
+        <button id="btn-cancel-bookmark" class="btn btn-ghost">Cancel</button>
+      </div>
+      <div id="viewer-bookmarks-list"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS PANEL (slides in from right) -->
+  <div id="settings-panel">
+    <div class="settings-header">
+      <h2>Settings</h2>
+      <button id="btn-close-settings">✕</button>
+    </div>
+    <div class="settings-body">
+      <div class="settings-group">
+        <h3>Display</h3>
+        <label><input type="checkbox" id="setting-thumbnails" checked> Show thumbnail previews</label>
+        <button id="btn-toggle-ext" class="btn btn-secondary">
+          <span id="icon-comfortable">Show file extensions</span>
+          <span id="icon-compact" class="hidden">Hide file extensions</span>
+        </button>
+        <button id="btn-toggle-compact" class="btn btn-secondary">Toggle compact grid</button>
+      </div>
+      <div class="settings-group">
+        <h3>Scanning</h3>
+        <button id="btn-scan-new" class="btn btn-secondary">Scan for new files</button>
+        <button id="btn-reindex-all" class="btn btn-secondary">Re-index all thumbnails</button>
+        <button id="btn-clear-cache" class="btn btn-secondary">Clear thumbnail cache</button>
+      </div>
+      <div class="settings-group">
+        <h3>Tags</h3>
+        <div id="settings-tag-list"></div>
+      </div>
+      <div class="settings-group">
+        <h3>Data</h3>
+        <button id="btn-export-data" class="btn btn-secondary">Export data (JSON)</button>
+        <button id="btn-import-data" class="btn btn-secondary">Import data (JSON)</button>
+        <input type="file" id="import-data-input" accept=".json" class="hidden">
+        <span id="import-status"></span>
+        <button id="btn-clear-data" class="btn btn-danger">Clear all data</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="pdf.min.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
