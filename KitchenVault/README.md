@@ -12,11 +12,11 @@ A local cooking recipe organizer with a premium, gourmet interface. Built entire
 
 <div align="center">
   <img src="Screenshots/Cream_Teal_kitchen-vault-20260605-212812.png" width="48%" alt="Cream Teal Theme">
-  <img src="screenshots/Graphite_Amber_kitchen-vault-20260605-213157.png" width="48%" alt="Graphite Amber Theme">
-  <img src="screenshots/Solarized_kitchen-vault-20260605-213304.png" width="48%" alt="Solarized Dark Theme">
-  <img src="screenshots/Recipe_View_kitchen-vault-20260605-213510.png" width="48%" alt="Recipe Viewer">
-  <img src="screenshots/Settings_Panel_kitchen-vault-20260605-213407.png" width="48%" alt="Settings Panel">
-  <img src="screenshots/right-click feature_KitchenVault.png" width="48%" alt="Native Context Menus">
+  <img src="Screenshots/Graphite_Amber_kitchen-vault-20260605-213157.png" width="48%" alt="Graphite Amber Theme">
+  <img src="Screenshots/Solarized_kitchen-vault-20260605-213304.png" width="48%" alt="Solarized Dark Theme">
+  <img src="Screenshots/Recipe_View_kitchen-vault-20260605-213510.png" width="48%" alt="Recipe Viewer">
+  <img src="Screenshots/Settings_Panel_kitchen-vault-20260605-213407.png" width="48%" alt="Settings Panel">
+  <img src="Screenshots/right-click feature_KitchenVault.png" width="48%" alt="Native Context Menus">
 </div>
 
 ## Features
