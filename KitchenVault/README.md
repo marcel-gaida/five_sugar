@@ -11,7 +11,7 @@ A local cooking recipe organizer with a premium, gourmet interface. Built entire
 ## Screenshots
 
 <div align="center">
-  <img src="screenshots/Cream_Teal_kitchen-vault-20260605-212812.png" width="48%" alt="Cream Teal Theme">
+  <img src="KitchenVault/Screenshots/Cream_Teal_kitchen-vault-20260605-212812.png" width="48%" alt="Cream Teal Theme">
   <img src="screenshots/Graphite_Amber_kitchen-vault-20260605-213157.png" width="48%" alt="Graphite Amber Theme">
   <img src="screenshots/Solarized_kitchen-vault-20260605-213304.png" width="48%" alt="Solarized Dark Theme">
   <img src="screenshots/Recipe_View_kitchen-vault-20260605-213510.png" width="48%" alt="Recipe Viewer">
