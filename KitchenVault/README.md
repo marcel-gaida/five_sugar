@@ -50,7 +50,7 @@ Because web browsers run in a secure sandbox, Chrome extensions cannot natively 
 ## Installation Instructions
 
 ### Step 1: Prepare the Files
-1. Download this entire `KitchenVault` folder.
+1. Download this entire `KitchenVault` folder or download the [`KitchenVault_Extension.zip`](https://github.com/marcel-gaida/five_sugar/blob/b0ee9445581d80a3d5fa57052ccb72a9217929a4/KitchenVault/KitchenVault_Extension.zip) file and unpack it.   
 2. The extension uses PDF.js. Ensure `pdf.min.js` and `pdf.worker.min.js` are in the root directory alongside `manifest.json`.
 
 ### Step 2: Load into Chrome
