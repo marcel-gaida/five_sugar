@@ -2,6 +2,16 @@
 
 A local crochet pattern organizer with a warm, cozy interface. Built entirely with vanilla JavaScript, CSS, and HTML for Chrome Manifest V3.
 
+## Screenshots
+<div align="center">
+  <img src="screenshots/BookmarkYarnVault.png" width="48%" alt="Bookmark Feature">
+  <img src="screenshots/CreamTealThemeYarnVault.png" width="48%" alt="Cream Teal Theme">
+  <img src="screenshots/GraphiteAmberThemeYarnVault.png" width="48%" alt="Graphite Amber Theme">
+  <img src="screenshots/RowCounterYarnVault.png" width="48%" alt="Row Counter">
+  <img src="screenshots/SettingsYarnVault.png" width="48%" alt="Settings Panel">
+  <img src="screenshots/SolarizedThemeYarnVault.png" width="48%" alt="Solarized Dark Theme">
+</div>
+
 ## Features
 - **Local File System Access**: Browse your local folders directly from the extension (requires choosing a folder on first load).
 - **PDF & Image Viewer**: Built-in viewer with PDF.js rendering and image zooming.
