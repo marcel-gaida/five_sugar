@@ -12,9 +12,9 @@ def create_icon(size, filename):
     radius = (size / 2) - padding
     
     # Colors matching the theme
-    primary_color = (192, 98, 45, 255) # #c0622d
-    accent_color = (212, 145, 94, 255) # #d4915e
-    hook_color = (138, 110, 92, 255) # #8a6e5c
+    primary_color = (15, 118, 110, 255)  # #0f766e
+    accent_color = (42, 161, 152, 255)   # #2aa198
+    hook_color = (249, 115, 22, 255)     # #f97316
     
     # Draw yarn ball (circle)
     draw.ellipse(

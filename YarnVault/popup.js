@@ -9,6 +9,23 @@
  */
 
 
+// Fallback mock for local testing outside extension context
+if (typeof chrome === 'undefined' || !chrome.storage || !chrome.storage.local) {
+    window.chrome = {
+        storage: {
+            local: {
+                get: (keys, cb) => {
+                    const data = {};
+                    if (cb) cb(data);
+                },
+                set: (items, cb) => {
+                    if (cb) cb();
+                }
+            }
+        }
+    };
+}
+
 // ============================================================
 // SECTION 1: Constants & State
 // ============================================================
@@ -39,7 +56,13 @@ const state = {
         activeFile: null,
         pdfDoc: null,
         pageNum: 1,
-        zoom: 1
+        zoom: 0.75,
+        renderTask: null
+    },
+    rowCounter: {
+        count: 0,
+        isOpen: false,
+        savedRounds: []  // { page: n, count: n, label: 'Finished round X' }
     }
 };
 
@@ -70,6 +93,17 @@ async function loadStorage() {
     return new Promise((resolve) => {
         chrome.storage.local.get(null, (data) => {
             if (data.metadata) state.metadata = data.metadata;
+            // Migration for stitchCounts & stitchRounds to rowCounts & rowRounds
+            if (state.metadata.stitchCounts) {
+                state.metadata.rowCounts = { ...state.metadata.stitchCounts, ...state.metadata.rowCounts };
+                delete state.metadata.stitchCounts;
+            }
+            if (state.metadata.stitchRounds) {
+                state.metadata.rowRounds = { ...state.metadata.stitchRounds, ...state.metadata.rowRounds };
+                delete state.metadata.stitchRounds;
+            }
+            if (!state.metadata.rowCounts) state.metadata.rowCounts = {};
+            if (!state.metadata.rowRounds) state.metadata.rowRounds = {};
             if (data.settings) {
                 state.settings = { ...state.settings, ...data.settings };
             }
@@ -86,6 +120,7 @@ async function loadStorage() {
 
 /** Save Metadata function. */
 async function saveMetadata() {
+    scheduleAutoBackup();
     return new Promise((resolve) => {
         chrome.storage.local.set({ metadata: state.metadata }, resolve);
     });
@@ -113,7 +148,7 @@ async function saveSettings() {
 // ============================================================
 function openDB() {
     return new Promise((resolve, reject) => {
-      const req = indexedDB.open('YarnVaultDB', 2);
+      const req = indexedDB.open('YarnVaultDB', 3);
       req.onupgradeneeded = e => {
           const db = e.target.result;
           if (!db.objectStoreNames.contains('handles')) db.createObjectStore('handles');
@@ -187,7 +222,7 @@ async function clearThumbnailCache() {
 /** Select Folder function. */
 async function selectFolder() {
     try {
-        const handle = await window.showDirectoryPicker({ mode: 'read' });
+        const handle = await window.showDirectoryPicker({ mode: 'readwrite' });
         state.directoryHandle = handle;
         chrome.storage.local.set({ prevFolderName: handle.name });
         await saveHandle(handle);
@@ -227,19 +262,49 @@ async function scanDirectory() {
     }
 
     try {
-        const db = await openDB();
-        const tx = db.transaction('thumbnails', 'readonly');
-        const store = tx.objectStore('thumbnails');
-        const countReq = store.count();
-        const cachedCount = await new Promise(r => countReq.onsuccess = () => r(countReq.result));
+        try {
+            const db = await openDB();
+            const tx = db.transaction('thumbnails', 'readonly');
+            const store = tx.objectStore('thumbnails');
+            const countReq = store.count();
+            const cachedCount = await new Promise(r => countReq.onsuccess = () => r(countReq.result));
+        } catch (dbErr) {
+            console.warn("Failed to initialize or query thumbnails database:", dbErr);
+        }
         
         await traverse(state.directoryHandle, state.directoryHandle.name, 0);
+        
+        // Check if metadata is empty and attempt auto-recovery from local backup file
+        const isEmpty = !state.metadata.tags || (
+            Object.keys(state.metadata.tags).length === 0 &&
+            Object.keys(state.metadata.ratings || {}).length === 0 &&
+            Object.keys(state.metadata.bookmarks || {}).length === 0
+        );
+
+        if (isEmpty) {
+            try {
+                const fileHandle = await state.directoryHandle.getFileHandle('yarnvault_backup.json', { create: false });
+                const file = await fileHandle.getFile();
+                const text = await file.text();
+                const imported = JSON.parse(text);
+                if (imported) {
+                    state.metadata.tags = imported.tags || {};
+                    state.metadata.ratings = imported.ratings || {};
+                    state.metadata.bookmarks = imported.bookmarks || {};
+                    await saveMetadata();
+                    console.log("Automatically restored metadata from yarnvault_backup.json!");
+                }
+            } catch (e) {
+                // Ignore error if backup file doesn't exist
+            }
+        }
         
         state.currentPath = state.directoryHandle.name; // start at root
         scanComplete = true;
         
         showAppShell();
         renderApp();
+        scheduleAutoBackup();
         // Show indexing prompt if first time
         if (!state.settings.firstLoadCompleted) {
             const promptEl = document.getElementById('indexing-prompt');
@@ -736,12 +801,21 @@ async function generateAndCacheThumb(path) {
 // --- 5. VIEWER ---
 function setZoom(delta) {
     if (delta === 0) {
-        state.viewer.zoom = 1;
+        state.viewer.zoom = 0.75;
     } else {
         state.viewer.zoom = Math.max(0.25, Math.min(4, state.viewer.zoom + delta));
     }
-    const img = document.getElementById('image-view');
-    if (img) img.style.transform = `scale(${state.viewer.zoom})`;
+    
+    if (state.viewer.activeFile && state.viewer.activeFile.type === 'pdf') {
+        renderPdfPage();
+    } else {
+        const img = document.getElementById('image-view');
+        if (img) {
+            const panelWidth = document.getElementById('viewer-canvas-container').clientWidth - 32;
+            img.style.width = (panelWidth * state.viewer.zoom) + 'px';
+        }
+    }
+    
     const resetBtn = document.getElementById('btn-zoom-reset');
     if (resetBtn) resetBtn.textContent = Math.round(state.viewer.zoom * 100) + '%';
 }
@@ -754,14 +828,17 @@ function setZoom(delta) {
 /** Open Viewer function. */
 async function openViewer(fileObj) {
     state.viewer.activeFile = fileObj;
-    state.viewer.zoom = 1;
+    state.viewer.zoom = 0.75;
+    
+    const resetBtn = document.getElementById('btn-zoom-reset');
+    if (resetBtn) resetBtn.textContent = '75%';
     
     renderViewerHeader();
     renderViewerTags();
     renderBookmarks();
     
     document.getElementById('pdf-controls').classList.add('hidden');
-    document.getElementById('image-controls').classList.add('hidden');
+    document.getElementById('viewer-control-divider').classList.add('hidden');
     document.getElementById('pdf-canvas').classList.add('hidden');
     document.getElementById('image-view').classList.add('hidden');
     
@@ -773,6 +850,7 @@ async function openViewer(fileObj) {
         const file = await fileObj.handle.getFile();
         if (fileObj.type === 'pdf') {
             document.getElementById('pdf-controls').classList.remove('hidden');
+            document.getElementById('viewer-control-divider').classList.remove('hidden');
             const arrayBuffer = await file.arrayBuffer();
             const loadingTask = pdfjsLib.getDocument({data: new Uint8Array(arrayBuffer)});
             state.viewer.pdfDoc = await loadingTask.promise;
@@ -782,15 +860,16 @@ async function openViewer(fileObj) {
             document.getElementById('page-num-input').value = 1;
             await renderPdfPage();
         } else {
-            document.getElementById('image-controls').classList.remove('hidden');
             const img = document.getElementById('image-view');
             img.src = URL.createObjectURL(file);
-            img.style.transform = 'scale(1)';
             img.classList.remove('hidden');
+            const panelWidth = document.getElementById('viewer-canvas-container').clientWidth - 32;
+            img.style.width = (panelWidth * state.viewer.zoom) + 'px';
         }
     } catch (e) {
         console.error("Error rendering file in viewer", e);
     }
+    loadRowState();
 }
 
 /** Render Viewer Header function. */
@@ -828,6 +907,9 @@ function closeViewer() {
         state.viewer.pdfDoc.destroy();
         state.viewer.pdfDoc = null;
     }
+    closeRowCounter();
+    state.rowCounter.count = 0;
+    state.rowCounter.savedRounds = [];
 }
 
 
@@ -835,13 +917,23 @@ function closeViewer() {
 /** Render Pdf Page function. */
 async function renderPdfPage() {
     if (!state.viewer.pdfDoc) return;
+    
+    if (state.viewer.renderTask) {
+        try {
+            state.viewer.renderTask.cancel();
+        } catch (err) {
+            // Ignore if task was already finished
+        }
+        state.viewer.renderTask = null;
+    }
+    
     const page = await state.viewer.pdfDoc.getPage(state.viewer.pageNum);
     const canvas = document.getElementById('pdf-canvas');
     const ctx = canvas.getContext('2d');
     
     const panelWidth = document.getElementById('viewer-canvas-container').clientWidth - 32;
     const unscaledViewport = page.getViewport({ scale: 1.0 });
-    const scale = panelWidth / unscaledViewport.width;
+    const scale = (panelWidth / unscaledViewport.width) * state.viewer.zoom;
     const viewport = page.getViewport({ scale: scale });
     
     canvas.width = viewport.width;
@@ -852,7 +944,17 @@ async function renderPdfPage() {
         canvasContext: ctx,
         viewport: viewport
     };
-    await page.render(renderContext).promise;
+    
+    state.viewer.renderTask = page.render(renderContext);
+    try {
+        await state.viewer.renderTask.promise;
+    } catch (err) {
+        if (err.name === 'HeadingTaskCancelledException' || err.name === 'RenderingCancelledException') {
+            // Render was cancelled, ignore
+            return;
+        }
+        console.error("PDF render error:", err);
+    }
     
     const pageInput = document.getElementById('page-num-input');
     if (pageInput) pageInput.value = state.viewer.pageNum;
@@ -884,7 +986,11 @@ async function saveBookmark() {
     }
     
     if (!state.metadata.bookmarks[path]) state.metadata.bookmarks[path] = [];
-    state.metadata.bookmarks[path].push({ label, posData, posDesc });
+    
+    const rowCount = state.rowCounter.count;
+    const pos = (type === 'pdf') ? state.viewer.pageNum : Math.round(document.getElementById('viewer-canvas-container').scrollTop);
+    
+    state.metadata.bookmarks[path].push({ label, posData, posDesc, pos, rowCount });
     
     saveMetadata();
     renderBookmarks();
@@ -913,7 +1019,39 @@ window.jumpToBookmark = function(idx) {
     } else {
         document.getElementById('viewer-canvas-container').scrollTop = b.posData.scroll;
     }
+    const rCount = b.rowCount !== undefined ? b.rowCount : b.stitchCount;
+    if (rCount !== undefined && rCount !== null) {
+        state.rowCounter.count = rCount;
+        updateRowDisplay();
+        saveRowState();
+        openRowCounter();
+    }
 }
+
+const stitchIcon = `
+<svg viewBox="0 0 24 24" width="13" height="13" fill="none"
+     stroke="var(--color-primary)" stroke-width="1.8"
+     stroke-linecap="round" stroke-linejoin="round"
+     style="flex-shrink:0; vertical-align:middle;">
+  <!-- Outer body -->
+  <rect x="2" y="5" width="17" height="14" rx="2.5" ry="2.5"/>
+  <!-- Digit window -->
+  <rect x="5" y="8.5" width="11" height="6" rx="1"/>
+  <!-- Two digit dividers inside window -->
+  <line x1="9" y1="8.5" x2="9" y2="14.5"/>
+  <line x1="13" y1="8.5" x2="13" y2="14.5"/>
+  <!-- Side click button -->
+  <line x1="19" y1="10" x2="22" y2="10"/>
+  <line x1="19" y1="13" x2="22" y2="13"/>
+</svg>`;
+
+const bookmarkIcon = `
+<svg viewBox="0 0 24 24" width="13" height="13" fill="none"
+     stroke="var(--color-accent)" stroke-width="2"
+     stroke-linecap="round" stroke-linejoin="round"
+     style="flex-shrink:0; vertical-align:middle;">
+  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+</svg>`;
 
 /** Render Bookmarks function. */
 function renderBookmarks() {
@@ -926,14 +1064,23 @@ function renderBookmarks() {
     
     const bmarks = state.metadata.bookmarks[file.path] || [];
     bmarks.forEach((b, idx) => {
+        const rCount = b.rowCount !== undefined ? b.rowCount : b.stitchCount;
+        const isRow = rCount !== undefined && rCount !== null;
         const item = document.createElement('div');
-        item.className = 'bookmark-item';
+        item.className = `bookmark-item ${isRow ? 'row-bookmark' : ''}`;
+        
+        const pageText = isRow ? `${b.posDesc} · row: ${rCount}` : b.posDesc;
+        const icon = isRow ? stitchIcon : bookmarkIcon;
         item.innerHTML = `
-            <span class="bookmark-label" title="${b.label}">${b.label}</span>
-            <span class="bookmark-page">${b.posDesc}</span>
+            <span class="bookmark-item-icon bookmark-icon" style="margin-right: 6px; cursor: pointer;">${icon}</span>
+            <span class="bookmark-label" title="${b.label}" style="flex: 1; cursor: pointer;">${b.label}</span>
+            <span class="bookmark-page" style="margin-right: 8px;">${pageText}</span>
             <button class="btn-icon btn-del-bookmark" title="Delete Bookmark">✕</button>
         `;
-        item.querySelector('.bookmark-label').onclick = () => jumpToBookmark(idx);
+        
+        const triggerJump = () => jumpToBookmark(idx);
+        item.querySelector('.bookmark-item-icon').onclick = triggerJump;
+        item.querySelector('.bookmark-label').onclick = triggerJump;
         item.querySelector('.btn-del-bookmark').onclick = () => deleteBookmark(idx);
         list.appendChild(item);
     });
@@ -944,26 +1091,14 @@ function renderBookmarks() {
 // ============================================================
 // SECTION 10: Settings & Theme
 // ============================================================
-/** Toggle Theme function. */
-function toggleTheme() {
-    const html = document.documentElement;
-    const current = html.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    html.setAttribute('data-theme', next);
-    state.settings.theme = next;
-    saveSettings();
-    
-    const iconSun = document.querySelector('.icon-sun');
-    const iconMoon = document.querySelector('.icon-moon');
-    if (iconSun && iconMoon) {
-        if (next === 'dark') {
-            iconSun.classList.remove('hidden');
-            iconMoon.classList.add('hidden');
-        } else {
-            iconSun.classList.add('hidden');
-            iconMoon.classList.remove('hidden');
-        }
-    }
+const THEMES = ['light', 'dark', 'solarized'];
+/** Apply Theme function. */
+function applyTheme(theme) {
+    if (!THEMES.includes(theme)) theme = 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    state.settings.theme = theme;
+    document.querySelectorAll('.theme-select-control')
+        .forEach(el => el.value = theme);
 }
 
 /** Set View Mode function. */
@@ -994,25 +1129,12 @@ function applySettingsToUI() {
     
     setViewMode(state.settings.viewMode || 'grid');
     
-    const html = document.documentElement;
-    html.setAttribute('data-theme', state.settings.theme || 'light');
+    applyTheme(state.settings.theme || 'light');
     
     const cardSize = state.settings.cardSize || 160;
-    html.style.setProperty('--card-size', `${cardSize}px`);
+    document.documentElement.style.setProperty('--card-size', `${cardSize}px`);
     const slider = document.getElementById('card-size-slider');
     if (slider) slider.value = cardSize;
-    
-    const iconSun = document.querySelector('.icon-sun');
-    const iconMoon = document.querySelector('.icon-moon');
-    if (iconSun && iconMoon) {
-        if ((state.settings.theme || 'light') === 'dark') {
-            iconSun.classList.remove('hidden');
-            iconMoon.classList.add('hidden');
-        } else {
-            iconSun.classList.add('hidden');
-            iconMoon.classList.remove('hidden');
-        }
-    }
     
     const iconComfortable = document.getElementById('icon-comfortable');
     const iconCompact = document.getElementById('icon-compact');
@@ -1040,14 +1162,7 @@ function applySettingsToUI() {
     if (thumbToggle) thumbToggle.checked = state.settings.showThumbnails;
 }
 
-/** Toggle Theme function. */
-function toggleTheme() {
-    const html = document.documentElement;
-    const current = html.getAttribute('data-theme');
-    const newTheme = current === 'light' ? 'dark' : 'light';
-    html.setAttribute('data-theme', newTheme);
-    chrome.storage.local.set({ theme: newTheme });
-}
+
 
 /** Render Sidebar Bookmarks function. */
 function renderSidebarBookmarks() {
@@ -1075,12 +1190,17 @@ function renderSidebarBookmarks() {
         groupDiv.appendChild(titleDiv);
         
         items.forEach((b, idx) => {
+            const rCount = b.rowCount !== undefined ? b.rowCount : b.stitchCount;
+            const isRow = rCount !== undefined && rCount !== null;
             const itemDiv = document.createElement('div');
-            itemDiv.className = 'sidebar-bookmark-item';
+            itemDiv.className = `sidebar-bookmark-item ${isRow ? 'row-bookmark' : ''}`;
+            
+            const pageText = isRow ? `${b.posDesc} · row: ${rCount}` : b.posDesc;
+            const icon = isRow ? stitchIcon : bookmarkIcon;
             itemDiv.innerHTML = `
-                <span class="sidebar-bookmark-icon">🔖</span>
+                <span class="bookmark-item-icon sidebar-bookmark-icon">${icon}</span>
                 <span class="sidebar-bookmark-label" title="${b.label}">${b.label}</span>
-                <span class="sidebar-bookmark-page">${b.posDesc}</span>
+                <span class="sidebar-bookmark-page">${pageText}</span>
             `;
             itemDiv.onclick = async () => {
                 await openViewer(fileObj);
@@ -1262,6 +1382,23 @@ function setupAddTagBtn() {
 // ============================================================
 // SECTION 11: Event Listeners (DOMContentLoaded block)
 // ============================================================
+async function reconnectFolder() {
+    try {
+        const savedHandle = await loadHandle();
+        if (savedHandle) {
+            const permission = await savedHandle.requestPermission({ mode: 'readwrite' });
+            if (permission === 'granted') {
+                state.directoryHandle = savedHandle;
+                await scanDirectory();
+                return;
+            }
+        }
+    } catch (e) {
+        console.error("Folder reconnection failed:", e);
+    }
+    selectFolder();
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     const data = await loadStorage();
     
@@ -1277,7 +1414,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         const savedHandle = await loadHandle();
         if (savedHandle) {
-            const permission = await savedHandle.requestPermission({ mode: 'read' });
+            // queryPermission doesn't require user gesture, allows silent auto-opening
+            const permission = await savedHandle.queryPermission({ mode: 'readwrite' });
             if (permission === 'granted') {
                 state.directoryHandle = savedHandle;
                 await scanDirectory();
@@ -1295,7 +1433,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const elBtnSelectFolder = document.getElementById('btn-select-folder');
     if (elBtnSelectFolder) elBtnSelectFolder.addEventListener('click', selectFolder);
     const elBtnReconnectFolder = document.getElementById('btn-reconnect-folder');
-    if (elBtnReconnectFolder) elBtnReconnectFolder.addEventListener('click', selectFolder);
+    if (elBtnReconnectFolder) elBtnReconnectFolder.addEventListener('click', reconnectFolder);
     const elBtnChangeFolder = document.getElementById('btn-change-folder');
     if (elBtnChangeFolder) elBtnChangeFolder.addEventListener('click', selectFolder);
     
@@ -1357,8 +1495,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         scanDirectory();
     });
     
-    const elThemeToggle = document.getElementById('theme-toggle');
-    if (elThemeToggle) elThemeToggle.addEventListener('click', toggleTheme);
+    document.querySelectorAll('.theme-select-control').forEach(el => {
+        el.addEventListener('change', function () {
+            applyTheme(this.value);
+            saveSettings();
+        });
+    });
     
     const btnGrid = document.getElementById('btn-view-grid');
     const btnList = document.getElementById('btn-view-list');
@@ -1469,6 +1611,45 @@ document.addEventListener('DOMContentLoaded', async () => {
     const elBtnZoomReset = document.getElementById('btn-zoom-reset');
     if (elBtnZoomReset) elBtnZoomReset.addEventListener('click', () => setZoom(0));
     
+    // Row counter keyboard control
+    document.addEventListener('keydown', (e) => {
+        if (!state.rowCounter.isOpen) return;
+        // Don't intercept if user is typing in an input
+        if (['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            incrementRow();
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            decrementRow();
+        }
+    });
+
+    // Row counter scroll control (only when panel is open)
+    document.addEventListener('wheel', (e) => {
+        if (!state.rowCounter.isOpen) return;
+        if (!e.target.closest('#row-counter-panel') &&
+            !e.target.closest('#viewer-panel')) return;
+        e.preventDefault();
+        if (e.deltaY < 0) {
+            incrementRow();
+        } else {
+            decrementRow();
+        }
+    }, { passive: false });
+
+    document.getElementById('btn-toggle-row')?.addEventListener('click', toggleRowCounter);
+    document.getElementById('btn-close-row')?.addEventListener('click', closeRowCounter);
+    document.getElementById('btn-row-inc')?.addEventListener('click', incrementRow);
+    document.getElementById('btn-row-dec')?.addEventListener('click', decrementRow);
+    document.getElementById('btn-row-reset')?.addEventListener('click', () => {
+        if (confirm('Reset row count to 0?')) resetRow();
+    });
+    document.getElementById('btn-row-save')?.addEventListener('click', saveRowRound);
+    document.getElementById('row-input')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') saveRowRound();
+    });
+
     // Tags Autocomplete
     initTagAutocomplete();
     
@@ -1612,7 +1793,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
     
     const elBtnClearData = document.getElementById('btn-clear-data');
-    
     if (elBtnClearData) elBtnClearData.addEventListener('click', () => {
         if(confirm("Are you sure you want to delete all tags, ratings, and bookmarks? This cannot be undone.")) {
             state.metadata = { tags: {}, ratings: {}, bookmarks: {} };
@@ -1620,4 +1800,259 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderApp();
         }
     });
+
 });
+
+let autoBackupTimeout = null;
+
+function scheduleAutoBackup() {
+    if (autoBackupTimeout) {
+        clearTimeout(autoBackupTimeout);
+    }
+    autoBackupTimeout = setTimeout(runAutoBackup, 2000);
+}
+
+async function runAutoBackup() {
+    if (!state.directoryHandle) return;
+    try {
+        const permission = await state.directoryHandle.queryPermission({ mode: 'readwrite' });
+        if (permission !== 'granted') return;
+
+        const backupData = {
+            tags: state.metadata.tags || {},
+            ratings: state.metadata.ratings || {},
+            bookmarks: state.metadata.bookmarks || {}
+        };
+
+        const fileHandle = await state.directoryHandle.getFileHandle('yarnvault_backup.json', { create: true });
+        const writable = await fileHandle.createWritable();
+        await writable.write(JSON.stringify(backupData, null, 2));
+        await writable.close();
+        console.log("Auto-backup saved to yarnvault_backup.json successfully!");
+    } catch (e) {
+        console.error("Failed to save automatic backup:", e);
+    }
+}
+
+// ============================================================
+// SECTION 13: Row Counter
+// ============================================================
+
+function openRowCounter() {
+    state.rowCounter.isOpen = true;
+    document.getElementById('row-counter-panel').classList.add('open');
+    renderRowRounds();
+    updateRowDisplay();
+}
+
+function closeRowCounter() {
+    state.rowCounter.isOpen = false;
+    document.getElementById('row-counter-panel').classList.remove('open');
+}
+
+function toggleRowCounter() {
+    state.rowCounter.isOpen ? closeRowCounter() : openRowCounter();
+}
+
+function updateRowDisplay() {
+    const el = document.getElementById('row-count-value');
+    if (!el) return;
+    el.textContent = state.rowCounter.count;
+    el.classList.remove('bump');
+    void el.offsetWidth; // force reflow
+    el.classList.add('bump');
+    setTimeout(() => el.classList.remove('bump'), 120);
+}
+
+function incrementRow() {
+    state.rowCounter.count++;
+    updateRowDisplay();
+    saveRowState();
+}
+
+function decrementRow() {
+    if (state.rowCounter.count > 0) {
+        state.rowCounter.count--;
+        updateRowDisplay();
+        saveRowState();
+    }
+}
+
+function resetRow() {
+    state.rowCounter.count = 0;
+    updateRowDisplay();
+    saveRowState();
+}
+
+function saveRowState() {
+    if (!state.viewer.activeFile) return;
+    const path = state.viewer.activeFile.path;
+    if (!state.metadata.rowCounts) state.metadata.rowCounts = {};
+    state.metadata.rowCounts[path] = state.rowCounter.count;
+    saveMetadata();
+}
+
+function loadRowState() {
+    if (!state.viewer.activeFile) return;
+    const path = state.viewer.activeFile.path;
+    state.rowCounter.count = state.metadata.rowCounts?.[path] || 0;
+    
+    // Rows/rounds are now unified into standard bookmarks
+    const fileBookmarks = state.metadata.bookmarks[path] || [];
+    state.rowCounter.savedRounds = fileBookmarks.filter(b => b.isRowBookmark || b.isStitchBookmark);
+    
+    updateRowDisplay();
+    renderRowRounds();
+    
+    // Automatically open row counter panel if there is active row counter data
+    if (state.rowCounter.count > 0 || state.rowCounter.savedRounds.length > 0) {
+        openRowCounter();
+    }
+}
+
+function saveRowRound() {
+    if (!state.viewer.activeFile) return;
+    const path = state.viewer.activeFile.path;
+    const type = state.viewer.activeFile.type;
+    
+    const roundInput = document.getElementById('row-input');
+    const noteInput = document.getElementById('row-note-input');
+    
+    const roundNum = parseInt(roundInput.value);
+    const note = noteInput.value.trim();
+    
+    // Need at least a round number or a description
+    if (isNaN(roundNum) && !note) return;
+    
+    const count = state.rowCounter.count;
+    
+    let posData = {};
+    let posDesc = "";
+    let pos = 0;
+    
+    if (type === 'pdf') {
+        posData = { page: state.viewer.pageNum };
+        posDesc = `Pg ${state.viewer.pageNum}`;
+        pos = state.viewer.pageNum;
+    } else {
+        const container = document.getElementById('viewer-canvas-container');
+        posData = { scroll: container.scrollTop };
+        posDesc = `Scroll ${Math.round(container.scrollTop)}px`;
+        pos = Math.round(container.scrollTop);
+    }
+    
+    let label = "";
+    if (!isNaN(roundNum) && note) {
+        label = `Round ${roundNum}: ${note}`;
+    } else if (!isNaN(roundNum)) {
+        label = `Round ${roundNum}`;
+    } else {
+        label = note;
+    }
+    
+    if (!state.metadata.bookmarks[path]) state.metadata.bookmarks[path] = [];
+    
+    const newBookmark = {
+        id: crypto.randomUUID(),
+        label,
+        posData,
+        posDesc,
+        pos,
+        rowCount: count,
+        roundNum: isNaN(roundNum) ? null : roundNum,
+        isRowBookmark: true
+    };
+    
+    // If round number is specified, replace any existing row bookmark with the same round number
+    if (!isNaN(roundNum)) {
+        state.metadata.bookmarks[path] = state.metadata.bookmarks[path]
+            .filter(b => !((b.isRowBookmark || b.isStitchBookmark) && b.roundNum === roundNum));
+    }
+    
+    state.metadata.bookmarks[path].push(newBookmark);
+    
+    // Sort: standard bookmarks first, row bookmarks sorted by round number (or position)
+    state.metadata.bookmarks[path].sort((a, b) => {
+        if (a.pos !== b.pos) return a.pos - b.pos;
+        if (a.roundNum && b.roundNum) return a.roundNum - b.roundNum;
+        return 0;
+    });
+    
+    saveMetadata();
+    renderBookmarks();
+    updateCardMeta(path);
+    renderSidebarBookmarks();
+    
+    // Update active rounds in rowCounter state and render
+    state.rowCounter.savedRounds = state.metadata.bookmarks[path].filter(b => b.isRowBookmark || b.isStitchBookmark);
+    renderRowRounds();
+    
+    // Automatically increment round number if set
+    if (!isNaN(roundNum)) {
+        roundInput.value = roundNum + 1;
+    }
+    noteInput.value = '';
+}
+
+function renderRowRounds() {
+    const list = document.getElementById('row-rounds-list');
+    if (!list) return;
+    
+    const path = state.viewer.activeFile?.path;
+    if (!path) {
+        list.innerHTML = '';
+        return;
+    }
+    
+    const fileBookmarks = state.metadata.bookmarks[path] || [];
+    const rounds = fileBookmarks.filter(b => b.isRowBookmark || b.isStitchBookmark);
+    list.innerHTML = '';
+    
+    rounds.forEach(b => {
+        const item = document.createElement('div');
+        item.className = 'row-round-item';
+        
+        const pageText = b.posData.page ? ` · page ${b.posData.page}` : '';
+        const rCount = b.rowCount !== undefined ? b.rowCount : b.stitchCount;
+        item.innerHTML = `
+            <div class="row-round-item-text">
+                <span class="row-round-label">${b.label}</span>
+                <span class="row-round-meta">Row ${rCount}${pageText}</span>
+            </div>
+            <button class="row-round-delete" title="Delete">✕</button>
+        `;
+        
+        // Click to restore — jump to page/scroll and restore count
+        item.addEventListener('click', (e) => {
+            if (e.target.closest('.row-round-delete')) return;
+            state.rowCounter.count = rCount;
+            updateRowDisplay();
+            if (b.posData.page && state.viewer.activeFile?.type === 'pdf') {
+                state.viewer.pageNum = b.posData.page;
+                renderPdfPage();
+            } else if (b.posData.scroll !== undefined) {
+                document.getElementById('viewer-canvas-container').scrollTop = b.posData.scroll;
+            }
+            saveRowState();
+        });
+        
+        // Delete button
+        item.querySelector('.row-round-delete').addEventListener('click', (e) => {
+            e.stopPropagation();
+            const idx = state.metadata.bookmarks[path].indexOf(b);
+            if (idx !== -1) {
+                state.metadata.bookmarks[path].splice(idx, 1);
+                saveMetadata();
+                renderBookmarks();
+                updateCardMeta(path);
+                renderSidebarBookmarks();
+                
+                // Update active rounds in rowCounter state and render
+                state.rowCounter.savedRounds = state.metadata.bookmarks[path].filter(x => x.isRowBookmark || x.isStitchBookmark);
+                renderRowRounds();
+            }
+        });
+        
+        list.appendChild(item);
+    });
+}

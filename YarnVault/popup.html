@@ -30,12 +30,17 @@
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
           </button>
         </div>
-        <div class="header-divider"></div>
-        <button id="theme-toggle" class="btn-icon" aria-label="Toggle theme" title="Toggle Dark/Light Mode">
-          <svg class="icon-moon" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-          <svg class="icon-sun hidden" viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <select id="theme-select" class="theme-select-control" title="Theme" aria-label="Select theme">
+          <option value="light">☀ Cream Teal</option>
+          <option value="dark">◐ Graphite Amber</option>
+          <option value="solarized">◕ Solarized</option>
+        </select>
+        <button id="settings-toggle" class="btn-icon" aria-label="Settings" title="Settings">
+          <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
         </button>
-        <button id="settings-toggle" class="btn-icon" aria-label="Settings" title="Settings">⚙</button>
       </div>
     </header>
 
@@ -60,11 +65,23 @@
         <option value="rating-asc">Rating (Low → High)</option>
       </select>
       <div class="slider-group" id="size-slider-group">
-        <span>🔍</span>
+        <svg class="slider-icon" viewBox="0 0 24 24" width="15" height="15"
+             stroke="currentColor" stroke-width="2" fill="none"
+             stroke-linecap="round" stroke-linejoin="round"
+             aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/>
+          <line x1="16.5" y1="16.5" x2="22" y2="22"/>
+        </svg>
         <input type="range" id="card-size-slider" min="100" max="400" value="160" step="10" title="Adjust Card Size">
       </div>
       <div></div>
-      <button id="btn-change-folder" class="btn btn-ghost">📁 Change Folder</button>
+      <button id="btn-change-folder" class="btn btn-ghost">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 7a2 2 0 0 1 2-2h3.5l2 2H19a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/>
+          <path d="M9 14h6M12 11.5l2.5 2.5-2.5 2.5"/>
+        </svg>
+        Change Folder
+      </button>
     </div>
 
     <!-- ===== MAIN CONTENT ===== -->
@@ -86,7 +103,13 @@
         <!-- Support Link -->
         <div class="sidebar-support-link">
           <a href="https://buymeacoffee.com/gaidamarcel" target="_blank" rel="noopener noreferrer">
-            ☕ Support your developer
+            <svg viewBox="0 0 24 24" width="14" height="14"
+                 stroke="currentColor" stroke-width="2" fill="none"
+                 stroke-linecap="round" stroke-linejoin="round"
+                 aria-hidden="true">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            Support your developer
           </a>
         </div>
       </aside>
@@ -171,16 +194,31 @@
         <div id="tag-autocomplete-dropdown" class="hidden"></div>
       </div>
     </div>
-    <div id="pdf-controls" class="hidden">
-      <button id="btn-prev-page">◀</button>
-      <input type="number" id="page-num-input" min="1" value="1">
-      <span>/ <span id="page-count">1</span></span>
-      <button id="btn-next-page">▶</button>
-    </div>
-    <div id="image-controls" class="hidden">
-      <button id="btn-zoom-out">−</button>
-      <button id="btn-zoom-reset">100%</button>
-      <button id="btn-zoom-in">+</button>
+    <div id="viewer-controls">
+      <div id="pdf-controls" class="hidden">
+        <button id="btn-prev-page">◀</button>
+        <input type="number" id="page-num-input" min="1" value="1">
+        <span>/ <span id="page-count">1</span></span>
+        <button id="btn-next-page">▶</button>
+      </div>
+      <div class="control-divider hidden" id="viewer-control-divider"></div>
+      <div id="zoom-controls">
+        <button id="btn-zoom-out">−</button>
+        <button id="btn-zoom-reset">75%</button>
+        <button id="btn-zoom-in">+</button>
+      </div>
+      <div class="control-divider"></div>
+      <button id="btn-toggle-row" class="btn btn-secondary"
+              title="Row Counter" style="padding: 6px 12px; font-size: var(--text-sm);">
+          <svg viewBox="0 0 24 24" width="13" height="13"
+               stroke="currentColor" stroke-width="2" fill="none"
+               stroke-linecap="round" stroke-linejoin="round"
+               style="margin-right:5px; vertical-align:middle;">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M3 12h3m12 0h3M12 3v3m0 12v3"/>
+          </svg>
+          Row Counter
+      </button>
     </div>
     <div id="viewer-canvas-container">
       <canvas id="pdf-canvas" class="hidden"></canvas>
@@ -206,6 +244,14 @@
     <div class="settings-body">
       <div class="settings-group">
         <h3>Display</h3>
+        <div class="settings-row" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <label for="theme-select-settings" style="font-weight:600; font-size:var(--text-sm); margin-bottom:0;">Theme</label>
+          <select id="theme-select-settings" class="theme-select-control" style="padding:4px 8px; border:1px solid var(--color-border); border-radius:4px; background:var(--color-surface); color:var(--color-text);">
+            <option value="light">☀ Cream Teal</option>
+            <option value="dark">◐ Graphite Amber</option>
+            <option value="solarized">◕ Solarized</option>
+          </select>
+        </div>
         <label><input type="checkbox" id="setting-thumbnails" checked> Show thumbnail previews</label>
         <button id="btn-toggle-ext" class="btn btn-secondary">
           <span id="icon-comfortable">Show file extensions</span>
@@ -232,6 +278,71 @@
         <button id="btn-clear-data" class="btn btn-danger">Clear all data</button>
       </div>
     </div>
+  </div>
+
+  <!-- ROW COUNTER PANEL — slides adjacent to viewer -->
+  <div id="row-counter-panel">
+      <div class="row-panel-header">
+          <div class="row-panel-title">
+              <svg viewBox="0 0 24 24" width="15" height="15"
+                   stroke="currentColor" stroke-width="2" fill="none"
+                   stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22C6.5 22 2 17.5 2 12S6.5 2 12 2s10 4.5 10 10-4.5 10-10 10z"/>
+                  <path d="M12 8v4l3 3"/>
+              </svg>
+              <span>Row Counter</span>
+          </div>
+          <button id="btn-close-row" aria-label="Close row counter"></button>
+      </div>
+
+      <div class="row-panel-body">
+
+          <!-- Main counter display -->
+          <div class="row-display-area">
+              <button class="row-btn-large row-dec" id="btn-row-dec" aria-label="Decrease">
+                  <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor"
+                       stroke-width="2.5" fill="none" stroke-linecap="round">
+                      <line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+              </button>
+
+              <div class="row-count-display">
+                  <span class="row-label">Row</span>
+                  <span id="row-count-value">0</span>
+                  <span class="row-hint">↑ ↓ or scroll</span>
+              </div>
+
+              <button class="row-btn-large row-inc" id="btn-row-inc" aria-label="Increase">
+                  <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor"
+                       stroke-width="2.5" fill="none" stroke-linecap="round">
+                      <line x1="12" y1="5" x2="12" y2="19"/>
+                      <line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+              </button>
+          </div>
+
+          <!-- Reset -->
+          <button class="row-reset-btn" id="btn-row-reset">Reset to 0</button>
+
+          <!-- Save as row/round bookmark -->
+          <div class="row-save-section">
+              <div class="row-save-header">Save Row/Round Bookmark</div>
+              <div class="row-save-row" style="flex-direction: column; align-items: stretch; gap: 8px;">
+                  <div style="display: flex; gap: 8px; width: 100%;">
+                      <input type="number" id="row-input" min="1" placeholder="Row/Round #" style="width: 80px; flex-shrink: 0;" />
+                      <input type="text" id="row-note-input" placeholder="Part / Description" style="flex: 1; min-width: 0;" />
+                  </div>
+                  <button class="btn btn-primary row-save-btn" id="btn-row-save" style="width: 100%;">Save Bookmark</button>
+              </div>
+          </div>
+
+          <!-- Saved rows list -->
+          <div class="row-rounds-section">
+              <div class="row-rounds-header">Saved Rows/Rounds</div>
+              <div id="row-rounds-list"></div>
+          </div>
+
+      </div>
   </div>
 
   <script src="pdf.min.js"></script>

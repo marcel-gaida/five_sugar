@@ -7,14 +7,15 @@ A local crochet pattern organizer with a warm, cozy interface. Built entirely wi
 - **PDF & Image Viewer**: Built-in viewer with PDF.js rendering and image zooming.
 - **Tagging & Rating**: Organize your patterns with custom tags and 1-5 star ratings.
 - **Bookmarking**: Save your spot (page number for PDFs, scroll position for images) so you can pick up exactly where you left off.
+- **Row Counter**: Keep track of your row or round progress directly within the pattern viewer.
 - **Search & Filter**: Find patterns instantly by name, path, or tag.
-- **Dark Mode**: Switch between a warm cream aesthetic and a cozy dark mode.
+- **Themes**: Switch between Light Mode (Cream Teal), Dark Mode (Graphite Amber), and Solarized Dark themes to suit your preference.
 
 ## Installation Instructions
 
 ### Step 1: Prepare the Files
-1. Download this entire `YarnVault` folder.
-2. The extension uses PDF.js. Ensure `pdf.min.js` and `pdf.worker.min.js` are in the root directory alongside `manifest.json`. 
+1. Download the [YarnVault_Release.zip](YarnVault_Release.zip) from the latest release and extract it to a folder on your computer. Alternatively, you can download this entire `YarnVault` folder.
+2. The extension uses PDF.js. If you downloaded the source code, ensure `pdf.min.js` and `pdf.worker.min.js` are in the root directory alongside `manifest.json`.
 
 ### Step 2: Load into Chrome
 1. Open Google Chrome.
@@ -34,3 +35,13 @@ A local crochet pattern organizer with a warm, cozy interface. Built entirely wi
 
 ## Data Privacy
 Everything is stored locally on your device in `chrome.storage.local`. No data is ever sent to any external server. You can export your tags, ratings, and bookmarks as a JSON file from the Settings panel.
+
+## Technical Structure
+The extension is built natively using web technologies, without heavy frameworks or build steps.
+- **`manifest.json`**: The Chrome Extension Manifest (V3). It defines extension metadata, permissions (`storage`, `sidePanel`), and registers the background worker and icons.
+- **`background.js`**: The service worker. It listens for the user clicking the extension icon in the toolbar and opens `popup.html` in a new browser tab.
+- **`popup.html`**: The main HTML structure for the application, defining the layout for the grid, the settings panel, and the slide-in file viewer.
+- **`popup.js`**: The core application logic. It manages state, uses the File System Access API to read local files, processes searches/filters, interacts with `chrome.storage.local` for metadata, and manages the custom PDF/Image viewer interface.
+- **`style.css`**: Vanilla CSS providing all styling, including responsive grid layout, light/dark themes using CSS variables, and viewer animations.
+- **`pdf.min.js` & `pdf.worker.min.js`**: PDF.js libraries used to natively render PDF pages to a canvas within the application.
+- **`generate_icons.py` & `icons/`**: A utility Python script that generates the required extension icon sizes based on a source design, placing them in the `icons` directory.

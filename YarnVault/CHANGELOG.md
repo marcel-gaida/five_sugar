@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.0.1] - 2026-06-06
+### Added
+- Documented the Row Counter feature in the README.md.
+- Created `YarnVault_Release.zip` containing only the files needed to run the extension for easier installation.
+
+### Changed
+- Updated README.md installation steps to link to the new release zip file.
+- Updated README.md to accurately document the available app themes (Light Mode, Dark Mode, Solarized Dark).
+- Added a technical structure breakdown to the README.md.
+- Changed the project license to Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0).
+
 ## [1.0.0] - 2026-06-03
 ### Initial Release
 - Local folder browsing via File System Access API
