@@ -14,7 +14,7 @@ A local crochet pattern organizer with a warm, cozy interface. Built entirely wi
 ## Installation Instructions
 
 ### Step 1: Prepare the Files
-1. Download the [YarnVault_Release.zip](YarnVault_Release.zip) from the latest release and extract it to a folder on your computer. Alternatively, you can download this entire `YarnVault` folder.
+1. Download the [YarnVault_Release 1.0.1.zip](https://github.com/marcel-gaida/five_sugar/blob/1fef36a045d65a9fd45c3efe497e583d47ccaf8d/YarnVault/YarnVault_Release%201.0.1%20.zip) from the latest release and extract it to a folder on your computer. Alternatively, you can download this entire `YarnVault` folder.
 2. The extension uses PDF.js. If you downloaded the source code, ensure `pdf.min.js` and `pdf.worker.min.js` are in the root directory alongside `manifest.json`.
 
 ### Step 2: Load into Chrome
