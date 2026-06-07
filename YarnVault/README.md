@@ -1,3 +1,9 @@
+![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-4285F4?style=flat-square&logo=google-chrome&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
+![Manifest V3](https://img.shields.io/badge/Manifest-V3-brightgreen?style=flat-square)
+
 # Yarn Vault Chrome Extension
 
 A local crochet pattern organizer with a warm, cozy interface. Built entirely with vanilla JavaScript, CSS, and HTML for Chrome Manifest V3.
