@@ -9,6 +9,7 @@ An advanced Chrome Extension that allows you to instantly check Glassdoor employ
 - **Smart Result Caching**: Saves scanned results during your session to minimize API calls and prevent layout shifts.
 
 ## Setup & Installation
+[⬇️ Download v1.1.0](https://github.com/marcel-gaida/five_sugar/blob/f92d5f60df1eaf5aac0748e94b284716262b32ae/company-rating-lookup-1.1.0/company-rating-lookup-1.1.0.zip)
 1. Go to `chrome://extensions/` in your Chrome browser.
 2. Turn on **Developer mode** (toggle switch in the top right corner).
 3. Click **Load unpacked**.
