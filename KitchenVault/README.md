@@ -11,12 +11,12 @@ A local cooking recipe organizer with a premium, gourmet interface. Built entire
 ## Screenshots
 
 <div align="center">
-  <img src="screenshots/Cream_Teal_kitchen-vault-20260605-212812.png" width="48%" alt="Cream Teal Theme">
-  <img src="screenshots/Graphite_Amber_kitchen-vault-20260605-213157.png" width="48%" alt="Graphite Amber Theme">
-  <img src="screenshots/Solarized_kitchen-vault-20260605-213304.png" width="48%" alt="Solarized Dark Theme">
-  <img src="screenshots/Recipe_View_kitchen-vault-20260605-213510.png" width="48%" alt="Recipe Viewer">
-  <img src="screenshots/Settings_Panel_kitchen-vault-20260605-213407.png" width="48%" alt="Settings Panel">
-  <img src="screenshots/right-click feature_KitchenVault.png" width="48%" alt="Native Context Menus">
+  <img src="Screenshots/Cream_Teal_kitchen-vault-20260605-212812.png" width="48%" alt="Cream Teal Theme">
+  <img src="Screenshots/Graphite_Amber_kitchen-vault-20260605-213157.png" width="48%" alt="Graphite Amber Theme">
+  <img src="Screenshots/Solarized_kitchen-vault-20260605-213304.png" width="48%" alt="Solarized Dark Theme">
+  <img src="Screenshots/Recipe_View_kitchen-vault-20260605-213510.png" width="48%" alt="Recipe Viewer">
+  <img src="Screenshots/Settings_Panel_kitchen-vault-20260605-213407.png" width="48%" alt="Settings Panel">
+  <img src="Screenshots/right-click feature_KitchenVault.png" width="48%" alt="Native Context Menus">
 </div>
 
 ## Features
@@ -51,8 +51,8 @@ Because web browsers run in a secure sandbox, Chrome extensions cannot natively 
 ## Installation Instructions
 
 ### Step 1: Prepare the Files
-1. Download this entire `KitchenVault` folder.
-2. The extension uses PDF.js. Ensure `pdf.min.js` and `pdf.worker.min.js` are in the root directory alongside `manifest.json`.
+1. Download this entire `KitchenVault` folder or [⬇️ Download KitchenVault v1.1.0](https://github.com/marcel-gaida/five_sugar/blob/d9e3eaafda54f3b90ceba890bcca8bec14c8be96/KitchenVault/KitchenVault_Extension_v1.1.0.zip) and extract it.
+3. The extension uses PDF.js. Ensure `pdf.min.js` and `pdf.worker.min.js` are in the root directory alongside `manifest.json`.
 
 ### Step 2: Load into Chrome
 1. Open Google Chrome.
