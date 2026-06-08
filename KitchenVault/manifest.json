@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Kitchen Vault",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Organize your local cooking recipe PDFs and images with tags, ratings, bookmarks, and thumbnail previews.",
   "permissions": [
     "storage",

@@ -256,7 +256,7 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
         </svg>
-        Add Annotation
+        <span class="btn-label">Add Annotation</span>
       </button>
       <button id="btn-toggle-converter" class="btn btn-secondary" title="Conversion Calculator">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -265,14 +265,24 @@
           <path d="M7 21.9l-4-4 4-4"/>
           <path d="M21 11.8v2a4 4 0 0 1-4 4H3"/>
         </svg>
-        Convert
+        <span class="btn-label">Convert</span>
       </button>
       <button id="btn-toggle-altitude" class="btn btn-secondary" title="High-Altitude Adjuster">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 20h18L12 4 3 20z"/>
           <path d="M9 20l3-7 3 7"/>
         </svg>
-        Altitude
+        <span class="btn-label">Altitude</span>
+      </button>
+      <button id="btn-toggle-shopping" class="btn btn-secondary" title="Shopping List">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none"
+               stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+          <span class="btn-label">List</span>
       </button>
       <div class="control-divider"></div>
       <button id="btn-delete-recipe" class="btn" title="Delete Recipe" style="background: transparent; border: 1px solid var(--color-danger); border-radius: var(--radius-sm);">
@@ -399,6 +409,100 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- SHOPPING LIST PANEL -->
+  <div id="shopping-list-panel">
+      <div class="shop-panel-header">
+          <div class="shop-panel-title">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none"
+                   stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                  <line x1="3" y1="6" x2="21" y2="6"/>
+                  <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+              <span>Shopping List</span>
+          </div>
+          <button id="btn-close-shopping" aria-label="Close shopping list"></button>
+      </div>
+
+      <div class="shop-panel-body">
+          <div class="shop-add-row">
+              <input type="text" id="shop-item-input"
+                     placeholder="Add ingredient…" autocomplete="off"/>
+              <button class="btn btn-primary shop-add-btn" id="btn-shop-add">Add</button>
+          </div>
+
+          <div id="shop-items-list"></div>
+
+          <div id="shop-empty-state" class="shop-empty">
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none"
+                   stroke="var(--color-text-muted)" stroke-width="1.5"
+                   stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                  <line x1="3" y1="6" x2="21" y2="6"/>
+                  <path d="M16 10a4 4 0 0 1-8 0"/>
+              </svg>
+              <span>Your list is empty.<br>Add ingredients as you read.</span>
+          </div>
+
+          <div class="shop-actions">
+              <button class="shop-action-btn" id="btn-shop-clear-all" title="Clear all">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none"
+                       stroke="currentColor" stroke-width="2"
+                       stroke-linecap="round" stroke-linejoin="round">
+                      <line x1="18" y1="6" x2="6" y2="18"/>
+                      <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                  All
+              </button>
+              <button class="shop-action-btn" id="btn-shop-clear-checked" title="Clear checked">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none"
+                       stroke="currentColor" stroke-width="2"
+                       stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  Checked
+              </button>
+              <button class="shop-action-btn" id="btn-shop-copy" title="Copy list">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none"
+                       stroke="currentColor" stroke-width="2"
+                       stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2"/>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                  </svg>
+                  Copy
+              </button>
+          </div>
+
+          <div class="shop-divider"></div>
+
+          <button class="shop-keep-btn" id="btn-shop-keep">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
+                   stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  <polyline points="15 3 21 3 21 9"/>
+                  <line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+              Open in Google Keep
+          </button>
+          
+          <div style="font-size: 10.5px; color: var(--color-text-muted); text-align: center; margin-top: -4px; margin-bottom: 6px; line-height: 1.35; padding: 0 8px;">
+              * Note: Copies list to clipboard. You must paste (Ctrl+V / Cmd+V) to create the note.
+          </div>
+
+          <button class="shop-email-btn" id="btn-shop-email">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="none"
+                   stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+              </svg>
+              Send via Email
+          </button>
+      </div>
   </div>
 
   <!-- ADD URL PANEL (slides in from right) -->

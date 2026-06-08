@@ -11,17 +11,18 @@ A local cooking recipe organizer with a premium, gourmet interface. Built entire
 ## Screenshots
 
 <div align="center">
-  <img src="Screenshots/Cream_Teal_kitchen-vault-20260605-212812.png" width="48%" alt="Cream Teal Theme">
-  <img src="Screenshots/Graphite_Amber_kitchen-vault-20260605-213157.png" width="48%" alt="Graphite Amber Theme">
-  <img src="Screenshots/Solarized_kitchen-vault-20260605-213304.png" width="48%" alt="Solarized Dark Theme">
-  <img src="Screenshots/Recipe_View_kitchen-vault-20260605-213510.png" width="48%" alt="Recipe Viewer">
-  <img src="Screenshots/Settings_Panel_kitchen-vault-20260605-213407.png" width="48%" alt="Settings Panel">
-  <img src="Screenshots/right-click feature_KitchenVault.png" width="48%" alt="Native Context Menus">
+  <img src="screenshots/Cream_Teal_kitchen-vault-20260605-212812.png" width="48%" alt="Cream Teal Theme">
+  <img src="screenshots/Graphite_Amber_kitchen-vault-20260605-213157.png" width="48%" alt="Graphite Amber Theme">
+  <img src="screenshots/Solarized_kitchen-vault-20260605-213304.png" width="48%" alt="Solarized Dark Theme">
+  <img src="screenshots/Recipe_View_kitchen-vault-20260605-213510.png" width="48%" alt="Recipe Viewer">
+  <img src="screenshots/Settings_Panel_kitchen-vault-20260605-213407.png" width="48%" alt="Settings Panel">
+  <img src="screenshots/right-click feature_KitchenVault.png" width="48%" alt="Native Context Menus">
 </div>
 
 ## Features
 - **Local File System Access**: Browse your local folders directly from the extension (requires choosing a folder on first load).
 - **Web Clipper**: Save recipes directly from the web into your local Kitchen Vault folder using the extension's popup context menu.
+- **Shopping List**: Build a dedicated shopping list for each recipe, and easily export it to Google Keep or send it directly via email (with the recipe name and page number automatically attached).
 - **Annotations & Bookmarking**: Add text annotations to your recipes, save your scroll position, or bookmark PDF pages so you can pick up exactly where you left off.
 - **Smart Cooking Tools**: Includes a built-in cooking timer, a unit converter for quick math while cooking, and a high-altitude baking adjuster.
 - **Auto-Backup**: Your metadata, tags, and ratings are automatically backed up to a `.kv/kitchenvault_backup.json` file in your vault so you never lose your data.
@@ -50,7 +51,7 @@ Because web browsers run in a secure sandbox, Chrome extensions cannot natively 
 ## Installation Instructions
 
 ### Step 1: Prepare the Files
-1. Download this entire `KitchenVault` folder or download the [`KitchenVault_Extension.zip`](https://github.com/marcel-gaida/five_sugar/blob/b0ee9445581d80a3d5fa57052ccb72a9217929a4/KitchenVault/KitchenVault_Extension.zip) file and unpack it.   
+1. Download this entire `KitchenVault` folder.
 2. The extension uses PDF.js. Ensure `pdf.min.js` and `pdf.worker.min.js` are in the root directory alongside `manifest.json`.
 
 ### Step 2: Load into Chrome

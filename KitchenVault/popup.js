@@ -13,6 +13,10 @@
 // SECTION 1: Constants & State
 // ============================================================
 const state = {
+    shoppingList: {
+        isOpen: false,
+        items: []
+    },
     directoryHandle: null,
     files: [], // Array of { handle, path, name, type, parentPath }
     folders: [], // Array of { path, name, level }
@@ -86,6 +90,7 @@ async function loadStorage() {
             } else {
                 state.metadata = { tags: {}, ratings: {}, bookmarks: {}, annotations: {} };
             }
+            if (!state.metadata.shoppingLists) state.metadata.shoppingLists = {};
             if (data.settings) {
                 state.settings = { ...state.settings, ...data.settings };
             }
@@ -2005,6 +2010,7 @@ function renderViewerHeader() {
 
 /** Close Viewer function. */
 function closeViewer() {
+    closeShoppingList();
     const overlay = document.getElementById('panel-overlay');
     if (overlay) { overlay.classList.remove('visible'); overlay.classList.add('hidden'); }
     document.getElementById('viewer-panel').classList.remove('open');
@@ -4392,3 +4398,190 @@ scanDirectory = async function() {
     await originalScanDirectoryForHelper();
     await checkHelperStatus();
 };
+
+// ============================================================
+// SHOPPING LIST
+// ============================================================
+function openShoppingList() {
+    loadShoppingList();
+    state.shoppingList.isOpen = true;
+    document.getElementById('shopping-list-panel').classList.add('open');
+    renderShoppingList();
+}
+
+function closeShoppingList() {
+    state.shoppingList.isOpen = false;
+    document.getElementById('shopping-list-panel').classList.remove('open');
+}
+
+function toggleShoppingList() {
+    state.shoppingList.isOpen ? closeShoppingList() : openShoppingList();
+}
+
+function loadShoppingList() {
+    if (!state.viewer.activeFile) {
+        state.shoppingList.items = [];
+        return;
+    }
+    const path = state.viewer.activeFile.path;
+    state.shoppingList.items = state.metadata.shoppingLists?.[path] || [];
+}
+
+function saveShoppingList() {
+    if (!state.viewer.activeFile) return;
+    const path = state.viewer.activeFile.path;
+    if (!state.metadata.shoppingLists) state.metadata.shoppingLists = {};
+    state.metadata.shoppingLists[path] = state.shoppingList.items;
+    saveMetadata();
+}
+
+function renderShoppingList() {
+    const list = document.getElementById('shop-items-list');
+    const empty = document.getElementById('shop-empty-state');
+    const keepBtn = document.getElementById('btn-shop-keep');
+    const emailBtn = document.getElementById('btn-shop-email');
+    if (!list) return;
+
+    const items = state.shoppingList.items;
+    list.innerHTML = '';
+
+    if (items.length === 0) {
+        empty.classList.remove('hidden');
+        keepBtn.disabled = true;
+        if (emailBtn) emailBtn.disabled = true;
+    } else {
+        empty.classList.add('hidden');
+        keepBtn.disabled = false;
+        if (emailBtn) emailBtn.disabled = false;
+    }
+
+    items.forEach(item => {
+        const el = document.createElement('div');
+        el.className = `shop-item${item.checked ? ' checked' : ''}`;
+        el.innerHTML = `
+            <input type="checkbox" ${item.checked ? 'checked' : ''}
+                   data-id="${item.id}"/>
+            <span class="shop-item-text">${item.text}</span>
+            <button class="shop-item-delete" data-id="${item.id}"
+                    title="Remove">✕</button>
+        `;
+
+        el.querySelector('input[type="checkbox"]').addEventListener('change', () => {
+            item.checked = !item.checked;
+            saveShoppingList();
+            renderShoppingList();
+        });
+
+        el.querySelector('.shop-item-delete').addEventListener('click', () => {
+            state.shoppingList.items = state.shoppingList.items
+                .filter(i => i.id !== item.id);
+            saveShoppingList();
+            renderShoppingList();
+        });
+
+        list.appendChild(el);
+    });
+}
+
+function addShoppingItem() {
+    const input = document.getElementById('shop-item-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    state.shoppingList.items.push({
+        id: crypto.randomUUID(),
+        text,
+        checked: false
+    });
+
+    input.value = '';
+    saveShoppingList();
+    renderShoppingList();
+    input.focus();
+}
+
+function clearCheckedItems() {
+    state.shoppingList.items = state.shoppingList.items.filter(i => !i.checked);
+    saveShoppingList();
+    renderShoppingList();
+}
+
+function clearAllItems() {
+    state.shoppingList.items = [];
+    saveShoppingList();
+    renderShoppingList();
+}
+
+function copyShoppingList() {
+    const items = state.shoppingList.items;
+    if (!items.length) return;
+
+    const text = items
+        .map(i => `${i.checked ? '✓' : '•'} ${i.text}`)
+        .join('\n');
+
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-shop-copy');
+        const original = btn.innerHTML;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.innerHTML = original; }, 1800);
+    });
+}
+
+function openInGoogleKeep() {
+    const items = state.shoppingList.items;
+    if (!items.length) return;
+
+    const title = 'Shopping List';
+    const text = `${title}\n\n` + items
+        .map(i => `${i.checked ? '✓' : '•'} ${i.text}`)
+        .join('\n');
+
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btn-shop-keep');
+        const original = btn.innerHTML;
+        btn.textContent = 'Copied! Opening Keep...';
+        setTimeout(() => { 
+            btn.innerHTML = original;
+            chrome.tabs.create({ url: 'https://keep.google.com/#NOTE' });
+        }, 800);
+    }).catch(() => {
+        chrome.tabs.create({ url: 'https://keep.google.com/#NOTE' });
+    });
+}
+
+document.getElementById('btn-toggle-shopping')?.addEventListener('click', toggleShoppingList);
+document.getElementById('btn-close-shopping')?.addEventListener('click', closeShoppingList);
+document.getElementById('btn-shop-add')?.addEventListener('click', addShoppingItem);
+document.getElementById('shop-item-input')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') addShoppingItem();
+});
+document.getElementById('btn-shop-clear-checked')?.addEventListener('click', clearCheckedItems);
+document.getElementById('btn-shop-clear-all')?.addEventListener('click', clearAllItems);
+document.getElementById('btn-shop-copy')?.addEventListener('click', copyShoppingList);
+document.getElementById('btn-shop-keep')?.addEventListener('click', openInGoogleKeep);
+document.getElementById('btn-shop-email')?.addEventListener('click', emailShoppingList);
+
+function emailShoppingList() {
+    const items = state.shoppingList.items;
+    if (!items.length) return;
+
+    // Get the open recipe file name, strip extension
+    const fileName = state.viewer.activeFile
+        ? state.viewer.activeFile.name.replace(/\.[^/.]+$/, '')
+        : 'Recipe';
+
+    let subjectStr = `Shopping List for ${fileName}`;
+    if (state.viewer.activeFile && state.viewer.activeFile.type === 'pdf' && state.viewer.pdfDoc && state.viewer.pdfDoc.numPages > 1) {
+        subjectStr += ` (Page ${state.viewer.pageNum})`;
+    }
+
+    const subject = encodeURIComponent(subjectStr);
+    const body = encodeURIComponent(
+        `${subjectStr}\n\n` +
+        items.map(i => `${i.checked ? '✓' : '•'} ${i.text}`).join('\n')
+    );
+
+    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`;
+    chrome.tabs.create({ url: gmailUrl });
+}
