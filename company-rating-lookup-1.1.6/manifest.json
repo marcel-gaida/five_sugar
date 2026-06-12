@@ -1,0 +1,59 @@
+{
+  "manifest_version": 3,
+  "name": "Company Rating Lookup",
+  "short_name": "Rating Lookup",
+  "version": "1.1.6",
+  "description": "Look up Glassdoor & Google Maps ratings for any company — right-click or bulk scan an entire job feed on two dedicated sites.",
+  "minimum_chrome_version": "116",
+  "permissions": [
+    "contextMenus",
+    "storage",
+    "activeTab",
+    "scripting",
+    "tabs",
+    "windows"
+  ],
+  "host_permissions": [
+    "https://maps.googleapis.com/*",
+    "https://www.glassdoor.com/*",
+    "https://www.google.com/*",
+    "https://www.linkedin.com/*",
+    "https://www.indeed.com/*",
+    "https://indeed.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["styles/card.css"]
+    },
+    {
+      "matches": ["https://www.linkedin.com/*"],
+      "js": ["linkedin-scanner.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://*.indeed.com/*", "*://indeed.com/*"],
+      "js": ["indeed-scanner.js"],
+      "css": ["styles/card.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon_overview_128.png",
+    "128": "icons/icon_overview_128.png"
+  }
+}
