@@ -13,7 +13,7 @@ An advanced Chrome Extension that allows you to instantly check Glassdoor employ
 1. Go to `chrome://extensions/` in your Chrome browser.
 2. Turn on **Developer mode** (toggle switch in the top right corner).
 3. Click **Load unpacked**.
-4. Select the `company-rating-lookup-1.1.0` folder.
+4. Select the `company-rating-lookup-1.1.6` folder.
 5. The extension is now installed! You can configure optional Google Places API settings by clicking the extension icon.
 
 ## Usage
