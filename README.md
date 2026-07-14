@@ -2,6 +2,23 @@
 
 A collection of small apps, browser extensions, scripts, and notebooks for solving practical problems quickly.
 
+## Latest Releases
+You can find the standalone portable executables for our major apps on the **[releases page](https://github.com/marcel-gaida/five_sugar/releases)**. No installation required - just download the .exe and run!
+### [Yarny (Latest Release)](https://github.com/marcel-gaida/five_sugar/releases)
+A portable, private crochet pattern organizer. 
+* **Local Access:** Browse your pattern folders directly from the app without uploading.
+* **Viewer:** Built-in PDF rendering and image viewer with zooming.
+* **Row Counter:** Full-screen row counter to track your progress seamlessly.
+* **Organization:** Custom tagging, 1-5 star ratings, and smart bookmarking so you never lose your spot.
+* **Privacy First:** 100% private, local storage.
+### [KitchenKeeper (v1.0.0)](https://github.com/marcel-gaida/five_sugar/releases)
+A local-first recipe organizer to help you save, manage, and view your favorite recipes completely offline.
+* **Local-First Experience:** All recipes and tags are stored locally on your machine. No accounts or cloud sync required.
+* **Timers:** Launches your native Windows timer directly from the app to keep your cooking on track.
+* **Organization:** Built-in tag manager for cuisines and dietary needs, plus file system integration.
+* **Companion Extension:** Save recipes directly from your browser to your local vault with a single click.
+---
+
 ## Repository layout
 
 The repository is organized by project type so it is easier to browse and maintain.
