@@ -45,3 +45,7 @@ The extension is built natively using web technologies, without heavy frameworks
 - **`style.css`**: Vanilla CSS providing all styling, including responsive grid layout, light/dark themes using CSS variables, and viewer animations.
 - **`pdf.min.js` & `pdf.worker.min.js`**: PDF.js libraries used to natively render PDF pages to a canvas within the application.
 - **`generate_icons.py` & `icons/`**: A utility Python script that generates the required extension icon sizes based on a source design, placing them in the `icons` directory.
+
+## Windows Desktop App
+If you are on Windows, I have also created a standalone desktop version called [Yarny](https://github.com/marcel-gaida/five_sugar/releases/tag/Yarnyv1.0.0). It is a portable application; no installation is required, and it offers enhanced organizational features directly within the app.
+
