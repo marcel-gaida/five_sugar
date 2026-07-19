@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Yarn Vault",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Organize your local crochet pattern PDFs and images with tags, ratings, bookmarks, and thumbnail previews.",
   "permissions": [
     "storage",

@@ -1,22 +1,6 @@
-![Chrome Extension](https://img.shields.io/badge/Chrome-Extension-4285F4?style=flat-square&logo=google-chrome&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white)
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
-![Manifest V3](https://img.shields.io/badge/Manifest-V3-brightgreen?style=flat-square)
-
 # Yarn Vault Chrome Extension
 
 A local crochet pattern organizer with a warm, cozy interface. Built entirely with vanilla JavaScript, CSS, and HTML for Chrome Manifest V3.
-
-## Screenshots
-<div align="center">
-  <img src="screenshots/BookmarkYarnVault.png" width="48%" alt="Bookmark Feature">
-  <img src="screenshots/CreamTealThemeYarnVault.png" width="48%" alt="Cream Teal Theme">
-  <img src="screenshots/GraphiteAmberThemeYarnVault.png" width="48%" alt="Graphite Amber Theme">
-  <img src="screenshots/RowCounterYarnVault.png" width="48%" alt="Row Counter">
-  <img src="screenshots/SettingsYarnVault.png" width="48%" alt="Settings Panel">
-  <img src="screenshots/SolarizedThemeYarnVault.png" width="48%" alt="Solarized Dark Theme">
-</div>
 
 ## Features
 - **Local File System Access**: Browse your local folders directly from the extension (requires choosing a folder on first load).
@@ -30,7 +14,7 @@ A local crochet pattern organizer with a warm, cozy interface. Built entirely wi
 ## Installation Instructions
 
 ### Step 1: Prepare the Files
-1. Download the [YarnVault_Release 1.0.1.zip](https://github.com/marcel-gaida/five_sugar/blob/1fef36a045d65a9fd45c3efe497e583d47ccaf8d/YarnVault/YarnVault_Release%201.0.1%20.zip) from the latest release and extract it to a folder on your computer. Alternatively, you can download this entire `YarnVault` folder.
+1. Download the [YarnVault_Release.zip](YarnVault_Release.zip) from the latest release and extract it to a folder on your computer. Alternatively, you can download this entire `YarnVault` folder.
 2. The extension uses PDF.js. If you downloaded the source code, ensure `pdf.min.js` and `pdf.worker.min.js` are in the root directory alongside `manifest.json`.
 
 ### Step 2: Load into Chrome

@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.0.2] - 2026-07-19
+### Added
+- Added a full screen toggle button for open pattern files in the viewer.
+- The row counter panel now slides in smoothly from the left side and adjusts the viewer width dynamically when in full screen mode.
+- Created `YarnVault_Release 1.0.2.zip` containing the updated extension files.
+
 ## [1.0.1] - 2026-06-06
 ### Added
 - Documented the Row Counter feature in the README.md.

@@ -1563,6 +1563,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Viewer actions
     const elBtnCloseViewer = document.getElementById('btn-close-viewer');
     if (elBtnCloseViewer) elBtnCloseViewer.addEventListener('click', closeViewer);
+
+    const elBtnToggleExpand = document.getElementById('btn-toggle-expand');
+    if (elBtnToggleExpand) {
+        elBtnToggleExpand.addEventListener('click', () => {
+            const viewerPanel = document.getElementById('viewer-panel');
+            if (viewerPanel) {
+                viewerPanel.classList.toggle('expanded');
+                const expandIcon = elBtnToggleExpand.querySelector('.icon-expand');
+                const compressIcon = elBtnToggleExpand.querySelector('.icon-compress');
+                if (expandIcon) expandIcon.classList.toggle('hidden');
+                if (compressIcon) compressIcon.classList.toggle('hidden');
+            }
+        });
+    }
     
     const elBtnPrevPage = document.getElementById('btn-prev-page');
     

@@ -772,9 +772,16 @@ button {
     flex-direction: column;
     border-left: 1px solid var(--color-border);
     transform: translateX(100%);
-    transition: transform var(--trans-smooth);
+    transition: transform var(--trans-smooth), width var(--trans-smooth);
 }
 #viewer-panel.open {
+    transform: translateX(0);
+}
+#viewer-panel.expanded {
+    width: 100vw;
+}
+#viewer-panel.expanded:has(~ #row-counter-panel.open) {
+    width: calc(100vw - 280px);
     transform: translateX(0);
 }
 
@@ -1328,6 +1335,20 @@ mark {
 #viewer-panel.open ~ #row-counter-panel.open {
     transform: translateX(-50vw);
     visibility: visible;
+}
+
+#viewer-panel.expanded.open ~ #row-counter-panel {
+    right: auto;
+    left: 0;
+    border-left: none;
+    border-right: 1px solid var(--color-border);
+    transform: translateX(-100%);
+}
+
+#viewer-panel.expanded.open ~ #row-counter-panel.open {
+    transform: translateX(0);
+    visibility: visible;
+    z-index: 105;
 }
 
 .row-panel-header {
